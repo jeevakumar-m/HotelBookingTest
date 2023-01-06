@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.payconiq.cucumber.RestUtil.APIConstants;
 import com.payconiq.cucumber.RestUtil.RestServices;
 import com.payconiq.cucumber.model.request.BookingDate;
-import com.payconiq.cucumber.model.request.BookingRequest;
-import com.payconiq.cucumber.model.response.CreateBookingId;
-import com.payconiq.cucumber.model.response.GetBookingResponse;
+import com.payconiq.cucumber.model.request.CreateBookingRequest;
+import com.payconiq.cucumber.model.request.PartialUpdateBookingRequest;
+import com.payconiq.cucumber.model.response.CreateBookingResponse;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -17,10 +17,8 @@ import io.restassured.http.Method;
 import org.junit.Assert;
 
 
-import java.awt.print.Book;
+import java.lang.reflect.Parameter;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 public class HotelBookingTestApplicationTests
 {
@@ -29,7 +27,8 @@ public class HotelBookingTestApplicationTests
     HashMap<String,String> queryParams=new HashMap<>();
     HashMap<String,String> bookingInfo= new HashMap<>();
     public String bookingId;
-    BookingRequest bookingRequest;
+    CreateBookingRequest bookingRequest;
+    PartialUpdateBookingRequest partialUpdateBookingRequest;
 
     @Before
     public void init()
@@ -61,23 +60,24 @@ public class HotelBookingTestApplicationTests
 
     @Given("user is authorised to access api")
     public void user_is_authorised_to_access_api() {
-        // Write code here that turns the phrase above into concrete actions
-
+        headers.put(APIConstants.header_Cookie,apiService.getToken());
     }
-    @Given("user posts request with valid information")
+    @Given("user creates booking request with valid information")
     public void user_posts_request_with_valid_information() {
-        // Write code here that turns the phrase above into concrete actions
+        userPostsRequestWith("TestFirst","TestLast","250",
+                "false","2022-01-01","2022-05-01","Lunch");
 
     }
     @When("user deletes the created booking id")
     public void user_deletes_the_created_booking_id() {
-        // Write code here that turns the phrase above into concrete actions
+         apiService.execute(APIConstants.apiBaseUrl+APIConstants.apiBookingUrl+"/"+ bookingId,
+                 Method.DELETE,null,headers,null);
 
     }
 
     @Then("the created booking does not exist")
     public void the_created_booking_does_not_exist() {
-        // Write code here that turns the phrase above into concrete actions
+
 
     }
 
@@ -89,7 +89,8 @@ public class HotelBookingTestApplicationTests
     }
     @When("user gets the booking information")
     public void user_gets_the_booking_information() {
-        // Write code here that turns the phrase above into concrete actions
+        apiService.execute(APIConstants.apiBaseUrl+APIConstants.apiBookingUrl+"/"+bookingId,
+                Method.GET,null,headers,null);
 
     }
 
@@ -121,7 +122,7 @@ public class HotelBookingTestApplicationTests
                                      String totalPrice, String depositPaid, String checkInDates,
                                      String checkOutDates, String addon) {
 
-        bookingRequest= new BookingRequest();
+        bookingRequest= new CreateBookingRequest();
         bookingRequest.firstname=firstName;
         bookingRequest.lastname=lastName;
         bookingRequest.totalprice=totalPrice;
@@ -133,16 +134,16 @@ public class HotelBookingTestApplicationTests
 
         apiService.execute(APIConstants.apiBookingUrl,
                 Method.POST,null,headers,new Gson().toJson(bookingRequest));
-        bookingId=new Gson().fromJson(apiService.getResponse().getBody().prettyPrint(), CreateBookingId.class).bookingid;
+        bookingId=new Gson().fromJson(apiService.getResponse().getBody().prettyPrint(), CreateBookingResponse.class).bookingid;
         bookingInfo.put(bookingId,apiService.getResponse().getBody().prettyPrint());
         System.out.println(bookingInfo);
     }
 
-    @When("user edits request with {string},{string},{string},{string},{string},{string},{string}")
-    public void userEditsRequestWith(String firstName, String lastName,
+    @When("user updates request with {string},{string},{string},{string},{string},{string},{string}")
+    public void userUpdatesRequestWith(String firstName, String lastName,
                                      String totalPrice, String depositPaid, String checkInDates,
                                      String checkOutDates, String addon) {
-        bookingRequest= new BookingRequest();
+        bookingRequest= new CreateBookingRequest();
         bookingRequest.firstname=firstName;
         bookingRequest.lastname=lastName;
         bookingRequest.totalprice=totalPrice;
@@ -152,17 +153,42 @@ public class HotelBookingTestApplicationTests
         bookingRequest.bookingdates.checkout=checkOutDates;
         bookingRequest.additionalneeds=addon;
 
-        apiService.execute(APIConstants.apiBookingUrl,
+        apiService.execute(APIConstants.apiBookingUrl+"/"+ bookingId,
                 Method.PUT,null,headers,new Gson().toJson(bookingRequest));
     }
 
-    @Then("verify the received content is as expected")
-    public void verifyTheReceivedContentIsAsExpected() {
-        CreateBookingId bookingResponse= new Gson().fromJson(apiService.getResponse().getBody().prettyPrint(),CreateBookingId.class);
+    @Then("verify the create booking response is as expected")
+    public void verifyCreateBookingResponseIsAsExpected() {
+        CreateBookingResponse bookingResponse= apiService.getResponse().getBody().as(CreateBookingResponse.class); //new Gson().fromJson(apiService.getResponse().getBody().prettyPrint(), CreateBookingResponse.class);
         Assert.assertTrue(bookingRequest.equals(bookingResponse.booking));
     }
 
-    @When("user patches request with {string},{string}")
-    public void userPatchesRequestWithFirstNameLastName(String firstName,String lastName) {
+    @Then("verify the update booking response is as expected")
+    public void  verifyUpdateBookingResponseIsAsExpected() {
+        CreateBookingRequest bookingResponse= apiService.getResponse().getBody().as(CreateBookingRequest.class);
+        Assert.assertTrue(bookingRequest.equals(bookingResponse));
+    }
+
+    @When("user partially updates request with {string},{string}")
+    public void userPartiallyUpdatesRequestWithFirstNameLastName(String firstName,String lastName) {
+        partialUpdateBookingRequest= new PartialUpdateBookingRequest();
+        partialUpdateBookingRequest.firstname=firstName;
+        partialUpdateBookingRequest.lastname=lastName;
+
+        apiService.execute(APIConstants.apiBaseUrl+APIConstants.apiBookingUrl+"/"+ bookingId,
+                Method.PATCH,null,headers,new Gson().toJson(partialUpdateBookingRequest));
+    }
+
+    @And("verify the partial update booking response is as expected")
+    public void verifyThePartialUpdateBookingResponseIsAsExpected() {
+        CreateBookingRequest bookingResponse= apiService.getResponse().getBody().as(CreateBookingRequest.class);
+        Assert.assertTrue(partialUpdateBookingRequest.firstname.equals(bookingResponse.firstname));
+        Assert.assertTrue(partialUpdateBookingRequest.lastname.equals(bookingResponse.lastname));
+    }
+
+    @And("verify the Get booking response is as expected")
+    public void verifyTheGetBookingResponseIsAsExpected() {
+        CreateBookingRequest GetbookingResponse=apiService.getResponse().getBody().as(CreateBookingRequest.class);
+        Assert.assertTrue(bookingRequest.equals(GetbookingResponse));
     }
 }

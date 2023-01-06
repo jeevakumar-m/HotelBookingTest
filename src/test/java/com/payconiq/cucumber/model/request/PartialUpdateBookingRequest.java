@@ -1,6 +1,6 @@
 package com.payconiq.cucumber.model.request;
 
-public class BookingNameUpdate extends BaseModel
+public class PartialUpdateBookingRequest extends BaseModel
         {
             public String firstname;
             public String lastname;

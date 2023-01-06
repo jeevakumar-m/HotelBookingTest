@@ -1,6 +1,6 @@
 package com.payconiq.cucumber.model.request;
 
-public class BookingRequest extends BaseModel
+public class CreateBookingRequest extends BaseModel
         {
             public String firstname;
             public String lastname;
@@ -9,7 +9,7 @@ public class BookingRequest extends BaseModel
             public BookingDate bookingdates;
             public String additionalneeds;
 
-            public boolean equals(BookingRequest bookingRequest)
+            public boolean equals(CreateBookingRequest bookingRequest)
             {
                 boolean flag=true;
                 flag &=isEqual(this.firstname,bookingRequest.firstname,"firstname");

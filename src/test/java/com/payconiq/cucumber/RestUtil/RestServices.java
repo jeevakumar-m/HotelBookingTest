@@ -8,6 +8,7 @@ import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
+import java.util.Base64;
 import java.util.HashMap;
 
 public class RestServices
@@ -18,22 +19,24 @@ public class RestServices
 
                 public String getToken()
                 {
+                        HashMap<String,String> headers= new HashMap<>();
+                        headers.put(APIConstants.header_ContentType,APIConstants.header_ApplicationJson);
                         if(token==null) {
                                 AuthTokenRequest authTokenRequest = new AuthTokenRequest();
-                                authTokenRequest.username = APIConstants.apiUserName;
-                                authTokenRequest.password = APIConstants.apiPassWord;
+                                authTokenRequest.username = new String(Base64.getDecoder().decode(APIConstants.apiUserName));
+                                authTokenRequest.password = new String (Base64.getDecoder().decode(APIConstants.apiPassWord));
 
                                 execute(APIConstants.apiBaseUrl + APIConstants.apiAuthUrl,
                                         Method.POST,
                                         null,
-                                        null,
+                                        headers,
                                         new Gson().toJson(authTokenRequest)
                                 );
 
                                 AuthTokenResponse authTokenResponse = new Gson().fromJson(this.response.getBody().prettyPrint(), AuthTokenResponse.class);
                                 token=authTokenResponse.token;
                         }
-                        return token;
+                        return APIConstants.token+token;
                 }
 
                 public void execute(String url,
@@ -54,7 +57,10 @@ public class RestServices
                                               response=request.when().headers(headers).get(url);
                                       break;
                               case POST:
+                                      if(headers!=null)
                                       response=request.when().headers(headers).body(jsonPayload).post(url);
+                                      else
+                                      response=request.when().body(jsonPayload).post(url);
                                       break;
                               case PATCH:
                                       response=request.when().headers(headers).body(jsonPayload).patch(url);
@@ -63,7 +69,7 @@ public class RestServices
                                       response=request.when().headers(headers).body(jsonPayload).put(url);
                                       break;
                               case DELETE:
-                                      response=request.when().headers(headers).queryParams(queryParams).delete(url);
+                                      response=request.when().headers(headers).delete(url);
                                       break;
                               default:
                                       throw new RuntimeException("Method :" + methodType + " is not found");

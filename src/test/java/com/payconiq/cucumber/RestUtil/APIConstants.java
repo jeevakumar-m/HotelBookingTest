@@ -15,4 +15,5 @@ public class APIConstants {
     public final static String header_Cookie="Cookie";
     public final static String header_Authorization="Authorization";
 
+    public final static String token="token=";
 }
