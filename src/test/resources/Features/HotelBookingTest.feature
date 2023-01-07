@@ -12,7 +12,7 @@ Feature: HotelBooking
     And verify the create booking response is as expected
     Examples:
       | firstName | lastName | totalPrice | depositPaid | checkInDates | checkOutDates | addon     |
-      | TestFN    | TestLN   | 1000       | true        | 2018-01-01   | 2018-01-01    | Breakfast |
+      | TestFN    | TestLN   | 1000       | true        | Today#5      | Today#10      | Breakfast |
 
   @UpdateBooking
   Scenario Outline: verify user can update an existing hotel booking
@@ -23,7 +23,7 @@ Feature: HotelBooking
     And verify the update booking response is as expected
     Examples:
       | firstName | lastName | totalPrice | depositPaid | checkInDates | checkOutDates | addon     |
-      | TestFN    | TestLN   | 1000       | true        | 2018-01-01   | 2018-01-01    | Breakfast |
+      | TestFN    | TestLN   | 1000       | true        | Today#30     | Today#35      | Breakfast |
 
   @PartialUpdateBooking
   Scenario Outline: verify user can partially update an existing hotel booking
@@ -51,10 +51,20 @@ Feature: HotelBooking
     Then verify status code 200 is received
     And verify the Get booking response is as expected
 
-  @GetBookingsInformation
-  Scenario: verify Booking ids are retreived with Get Api
-    Given user has created multiple hotel bookings
+  @GetBookingsInformationWithoutFilter
+  Scenario: verify Booking ids are retreived with Get Api with no filter
+    Given user has created "20" hotel bookings
     When user gets multiple booking information
     Then verify status code 200 is received
-    And verify multiple booking ids are retrieved
+    And verify "multiple" booking ids are retrieved
 
+  @GetBookingsInformationWithFilter
+  Scenario Outline: verify Booking ids are retreived with Get Api with filter
+    Given user has created "multiple" hotel bookings
+    When user gets multiple booking information filtered by "<filterCriteria>"
+    Then verify status code 200 is received
+    And verify "<recordCount>" booking ids are retrieved
+    Examples:
+      | filterCriteria                                  | recordCount |
+      | firstname=Payconiq_user_firstname_<timestamp>_1 | 1           |
+      | lastname=Payconiq_user_lastname_<timestamp>_5   | 1           |
