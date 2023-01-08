@@ -1,5 +1,8 @@
 package com.payconiq.cucumber.hotelBookingTestStepDefinition;
 
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.google.gson.Gson;
 import com.payconiq.cucumber.RestUtil.APIConstants;
 import com.payconiq.cucumber.RestUtil.RestServices;
@@ -43,6 +46,20 @@ public class HotelBookingTestApplicationTests
         queryParams.clear();
         headers.put(APIConstants.header_ContentType,APIConstants.header_ApplicationJson);
         timestamp=Instant.now().toString();
+        ExtentReports extent = new ExtentReports();
+        ExtentSparkReporter spark = new ExtentSparkReporter("target/Spark/Spark.html");
+        extent.attachReporter(spark);
+
+        extent.createTest("ScreenCapture")
+                .addScreenCaptureFromPath("extent.png")
+                .pass(MediaEntityBuilder.createScreenCaptureFromPath("extent.png").build());
+
+        extent.createTest("LogLevels")
+                .info("info")
+                .pass("pass")
+                .warning("warn")
+                .skip("skip")
+                .fail("fail");
     }
 
     @After
@@ -92,9 +109,9 @@ public class HotelBookingTestApplicationTests
     @Given("user creates booking request with valid information")
     public void user_creates_booking_request_with_valid_information() {
 
-        userPostsRequestWith("Payconiq_First_" + new Random().nextInt(1000,10000),
-                "Payconiq_Last_TestLast" + new Random().nextInt(1000,10000),
-                String.valueOf(new Random().nextInt(1000,10000)),
+        userPostsRequestWith("Payconiq_First_" + new Random().nextInt(1000),
+                "Payconiq_Last_TestLast" + new Random().nextInt(1000),
+                String.valueOf(new Random().nextInt(1000)),
                 "true",
                     "2022-01-01",
                 "2022-05-01",
