@@ -12,6 +12,7 @@ import com.payconiq.cucumber.model.request.PartialUpdateBookingRequest;
 import com.payconiq.cucumber.model.response.CreateBookingResponse;
 import com.payconiq.cucumber.model.response.GetBookingResponse;
 import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -46,20 +47,7 @@ public class HotelBookingTestApplicationTests
         queryParams.clear();
         headers.put(APIConstants.header_ContentType,APIConstants.header_ApplicationJson);
         timestamp=Instant.now().toString();
-        ExtentReports extent = new ExtentReports();
-        ExtentSparkReporter spark = new ExtentSparkReporter("target/Spark/Spark.html");
-        extent.attachReporter(spark);
 
-        extent.createTest("ScreenCapture")
-                .addScreenCaptureFromPath("extent.png")
-                .pass(MediaEntityBuilder.createScreenCaptureFromPath("extent.png").build());
-
-        extent.createTest("LogLevels")
-                .info("info")
-                .pass("pass")
-                .warning("warn")
-                .skip("skip")
-                .fail("fail");
     }
 
     @After
@@ -113,8 +101,8 @@ public class HotelBookingTestApplicationTests
                 "Payconiq_Last_TestLast" + new Random().nextInt(1000),
                 String.valueOf(new Random().nextInt(1000)),
                 "true",
-                    "2022-01-01",
-                "2022-05-01",
+                    "Today#30",
+                "Today#45",
                 "Lunch");
 
     }
@@ -123,13 +111,13 @@ public class HotelBookingTestApplicationTests
 
     @When("user deletes the created booking id")
     public void user_deletes_the_created_booking_id() {
-         apiService.execute(APIConstants.apiBaseUrl+APIConstants.apiBookingUrl+"/"+ bookingId,
+         apiService.execute(APIConstants.apiBookingUrl+"/"+ bookingId,
                  Method.DELETE,null,headers,null);
 
     }
 
     public void user_deletes_the_created_booking_idById(String myBookingId) {
-        apiService.execute(APIConstants.apiBaseUrl+APIConstants.apiBookingUrl+"/"+ myBookingId,
+        apiService.execute(APIConstants.apiBookingUrl+"/"+ myBookingId,
                 Method.DELETE,null,headers,null);
 
 
@@ -144,7 +132,7 @@ public class HotelBookingTestApplicationTests
 
     @When("user gets the booking information")
     public void user_gets_the_booking_information() {
-        apiService.execute(APIConstants.apiBaseUrl+APIConstants.apiBookingUrl+"/"+bookingId,
+        apiService.execute(APIConstants.apiBookingUrl+"/"+bookingId,
                 Method.GET,null,headers,null);
 
     }
@@ -165,8 +153,8 @@ public class HotelBookingTestApplicationTests
                     "Payconiq_user_lastname_"+timestamp +"_"+i,
                     String.valueOf(12250+i),
                     String.valueOf(true),
-                    getDate("Today#"+i),
-                    getDate("Today#"+(i+1)),
+                  "Today#"+i,
+                    "Today#"+(i+1),
                     "breakfast");
         }
         else {
@@ -177,7 +165,7 @@ public class HotelBookingTestApplicationTests
     }
     @When("user gets multiple booking information")
     public void user_gets_multiple_booking_information() {
-        apiService.execute(APIConstants.apiBaseUrl+APIConstants.apiBookingUrl,
+        apiService.execute(APIConstants.apiBookingUrl,
                 Method.GET,null,headers,null);
 
     }
@@ -187,9 +175,16 @@ public class HotelBookingTestApplicationTests
     {
         HashMap<String,String> queryParam = new HashMap<>();
         for(String fieldValue:filterCriteria.split(";")) {
-            queryParam.put(fieldValue.split("=")[0],fieldValue.split("=")[1].replace("<timestamp>",timestamp));
+            String[] fieldText = fieldValue.split("=");
+            if (fieldText[0].contains("firstname") || fieldText[0].contains("lastname")) {
+                queryParam.put(fieldText[0], fieldText[1].replace("<timestamp>", timestamp));
+            }
+            if(fieldText[0].contains("checkin") || fieldText[0].contains("checkout"))
+            {
+                queryParam.put(fieldText[0],getDate(fieldText[1]));
+            }
         }
-        apiService.execute(APIConstants.apiBaseUrl+APIConstants.apiBookingUrl,
+        apiService.execute(APIConstants.apiBookingUrl,
                 Method.GET,queryParam,headers,null);
     }
 
@@ -200,6 +195,7 @@ public class HotelBookingTestApplicationTests
         Assert.assertTrue(getBookingResponse.size()>0);
         else
         Assert.assertTrue(getBookingResponse.size()==Integer.valueOf(records));
+        Assert.assertTrue(bookingInfo.containsKey(getBookingResponse.get(0).bookingid));
     }
 
     @When("user posts request with {string},{string},{string},{string},{string},{string},{string}")
@@ -213,8 +209,8 @@ public class HotelBookingTestApplicationTests
         bookingRequest.totalprice=totalPrice;
         bookingRequest.depositpaid=depositPaid;
         bookingRequest.bookingdates= new BookingDate();
-        bookingRequest.bookingdates.checkin=checkInDates;
-        bookingRequest.bookingdates.checkout=checkOutDates;
+        bookingRequest.bookingdates.checkin=getDate(checkInDates);
+        bookingRequest.bookingdates.checkout=getDate(checkOutDates);
         bookingRequest.additionalneeds=addon;
 
         apiService.execute(APIConstants.apiBookingUrl,
@@ -234,8 +230,8 @@ public class HotelBookingTestApplicationTests
         bookingRequest.totalprice=totalPrice;
         bookingRequest.depositpaid=depositPaid;
         bookingRequest.bookingdates= new BookingDate();
-        bookingRequest.bookingdates.checkin=checkInDates;
-        bookingRequest.bookingdates.checkout=checkOutDates;
+        bookingRequest.bookingdates.checkin=getDate(checkInDates);
+        bookingRequest.bookingdates.checkout=getDate(checkOutDates);
         bookingRequest.additionalneeds=addon;
 
         apiService.execute(APIConstants.apiBookingUrl+"/"+ bookingId,

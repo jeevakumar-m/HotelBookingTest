@@ -65,6 +65,8 @@ Feature: HotelBooking
     Then verify status code 200 is received
     And verify "<recordCount>" booking ids are retrieved
     Examples:
-      | filterCriteria                                  | recordCount |
-      | firstname=Payconiq_user_firstname_<timestamp>_1 | 1           |
-      | lastname=Payconiq_user_lastname_<timestamp>_5   | 1           |
+      | filterCriteria                                                   | recordCount |
+   #   | firstname=Payconiq_user_firstname_<timestamp>_1                  | 1           |
+   #   | lastname=Payconiq_user_lastname_<timestamp>_3                    | 1           |
+      | firstname=Payconiq_user_firstname_<timestamp>_0;checkin=Today#0  | 1           |
+      | firstname=Payconiq_user_firstname_<timestamp>_1;checkout=Today#1 | 1           |
