@@ -1,4 +1,4 @@
-package com.payconiq.HotelBookingTest.configExtractor;
+package com.payconiq.cucumber.util.parser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
