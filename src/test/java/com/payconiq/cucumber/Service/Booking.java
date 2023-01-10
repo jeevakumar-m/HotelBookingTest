@@ -5,6 +5,7 @@ import com.payconiq.cucumber.model.request.CreateBookingRequest;
 import com.payconiq.cucumber.model.request.PartialUpdateBookingRequest;
 import com.payconiq.cucumber.model.response.CreateBookingResponse;
 import com.payconiq.cucumber.model.response.GetBookingResponse;
+import com.payconiq.cucumber.util.Logger.LoggerFile;
 import com.payconiq.cucumber.util.api.APIConstants;
 import com.payconiq.cucumber.util.api.APIUtils;
 import io.restassured.http.Method;
@@ -20,6 +21,7 @@ public class Booking extends APIUtils {
 
     public int getBooking(HashMap<String,String> headers,String bookingId)
     {
+        LoggerFile.log("--------------------Get Booking Request--------------------");
         return execute(String.format(bookingURLWithId,bookingId),
                 Method.GET,null,headers,null);
     }
@@ -34,6 +36,7 @@ public class Booking extends APIUtils {
     public int getBookings(HashMap<String,String> headers,
                             HashMap<String,String> queryParams)
     {
+        LoggerFile.log("--------------------Get Bookings Request--------------------");
         return execute(bookingURL,
                 Method.GET,queryParams,headers,null);
     }
@@ -46,7 +49,7 @@ public class Booking extends APIUtils {
     public int createBooking(HashMap<String,String> headers,
                                      CreateBookingRequest createBookingPayload)
     {
-
+        LoggerFile.log("--------------------Create Booking Request--------------------");
         return execute(bookingURL,
                 Method.POST,null,headers,new Gson().toJson(createBookingPayload));
     }
@@ -65,6 +68,7 @@ public class Booking extends APIUtils {
                               CreateBookingRequest updateBookingRequestPayload,
                               String bookingId)
     {
+        LoggerFile.log("--------------------Update Booking Request--------------------");
         return execute(String.format(bookingURLWithId,bookingId),
                 Method.PUT,null,headers,
                 new Gson().toJson(updateBookingRequestPayload));
@@ -76,9 +80,10 @@ public class Booking extends APIUtils {
     }
 
     public int partialUpdateBooking(HashMap<String,String> headers,
-                                     PartialUpdateBookingRequest partialUpdateBookingRequest,
+                                     CreateBookingRequest partialUpdateBookingRequest,
                                      String bookingId)
     {
+        LoggerFile.log("--------------------Partial Update Booking Request--------------------");
         return execute(String.format(bookingURLWithId,bookingId),
                 Method.PATCH,null,
                 headers,new Gson().toJson(partialUpdateBookingRequest));
@@ -91,6 +96,7 @@ public class Booking extends APIUtils {
 
     public int deleteBooking(HashMap<String,String> headers,String bookingId)
     {
+        LoggerFile.log("--------------------Delete Booking Request--------------------");
         return execute(String.format(bookingURLWithId,bookingId),
                 Method.DELETE,null,headers,null);
     }

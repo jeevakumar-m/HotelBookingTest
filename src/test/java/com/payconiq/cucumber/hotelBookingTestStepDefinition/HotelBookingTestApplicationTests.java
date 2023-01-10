@@ -1,19 +1,26 @@
 package com.payconiq.cucumber.hotelBookingTestStepDefinition;
 
 
+import com.payconiq.cucumber.Runner.TestRunner;
 import com.payconiq.cucumber.model.request.BookingDate;
 import com.payconiq.cucumber.model.request.CreateBookingRequest;
 import com.payconiq.cucumber.model.request.PartialUpdateBookingRequest;
 import com.payconiq.cucumber.model.response.GetBookingResponse;
+import com.payconiq.cucumber.util.Logger.LoggerFile;
 import com.payconiq.cucumber.util.api.APIConstants;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.junit.runner.RunWith;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.*;
 
@@ -21,36 +28,44 @@ public class HotelBookingTestApplicationTests extends AbstractBaseTestStep
 {
     public String bookingId;
     public CreateBookingRequest bookingRequest;
-    public PartialUpdateBookingRequest partialUpdateBookingRequest;
+    public CreateBookingRequest partialUpdateBookingRequest;
+
     @Before
-    public void init()
+    public void init(Scenario scenario)
     {
         headers.clear();
         queryParams.clear();
         headers.put(APIConstants.header_ContentType,APIConstants.header_ApplicationJson);
         timestamp= Instant.now().toString();
         actualStatusCode=0;
+        LoggerFile.log("Scenario Id :" + scenario.getId());
+        LoggerFile.log("Scenario name :" + scenario.getName());
+        LoggerFile.log("Precondition : Init restassured parameters and headers");
 
     }
     @After
     public void deleteCreatedBookingsForTest()
     {
-        System.out.println("Deleting existing Bookings created during Test");
+        LoggerFile.log("Postcondition : Deleting existing Bookings created during Test");
         headers.clear();
         headers.put(APIConstants.header_ContentType,APIConstants.header_ApplicationJson);
         headers.put(APIConstants.header_Cookie, getService.getAuthService().createToken());
         for(Map.Entry<String,String> createdBookingId: bookingInfo.entrySet())
         {
             getService.getBookingService().deleteBooking(headers,createdBookingId.getKey());
+            LoggerFile.log("Deleted Booking Id : " + createdBookingId.getKey());
         }
     }
     @When("user pings api end point")
     public void user_pings_api_end_point() {
         actualStatusCode=getService.getPingService().doHealthCheck(headers);
+        LoggerFile.log("Pinged Health Check Url , Status = " + actualStatusCode);
     }
     @Then("verify status code {int} is received")
     public void verify_status_code_is_received(Integer expectedStatusCode) {
         Assert.assertEquals(actualStatusCode==expectedStatusCode,true);
+        LoggerFile.log("Assertion of actual status code and expected status code" +
+                "actual status code=" + actualStatusCode + " , expected status code" + expectedStatusCode);
     }
     @Given("user is authorised to access api")
     public void user_is_authorised_to_access_api() {
@@ -184,20 +199,52 @@ public class HotelBookingTestApplicationTests extends AbstractBaseTestStep
     public void  verifyUpdateBookingResponseIsAsExpected() {
         Assert.assertTrue(bookingRequest.equals(getService.getBookingService().getUpdateBookingResponse()));
     }
-    @When("user partially updates request with {string},{string}")
-    public void userPartiallyUpdatesRequestWithFirstNameLastName(String firstName,String lastName) {
-        partialUpdateBookingRequest= new PartialUpdateBookingRequest();
-        partialUpdateBookingRequest.firstname=firstName;
-        partialUpdateBookingRequest.lastname=lastName;
+    @When("user partially updates request with {string}")
+    public void userPartiallyUpdatesRequestWithFirstNameLastName(String fieldValue) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        partialUpdateBookingRequest= new CreateBookingRequest();
 
+        Class<?> concreteClass1 = Class.forName(partialUpdateBookingRequest.getClass().getName());
+        Class<?> concreteClass2 = Class.forName(bookingRequest.getClass().getName());
+        Field field1=null;
+        Field field2=null;
+        for(String eachField:fieldValue.split(";")) {
+            if(!eachField.split("=")[0].contains("bookingdates.check")) {
+                field1 = concreteClass1.getField(eachField.split("=")[0]);
+                field2 = concreteClass2.getField(eachField.split("=")[0]);
+            }
+
+            if(eachField.split("=")[1].contains("Empty")) {
+                field1.set(partialUpdateBookingRequest,"" );
+                field2.set(bookingRequest,"" );
+            }
+            else if(eachField.split("=")[1].contains("space")) {
+                field1.set(partialUpdateBookingRequest," " );
+                field2.set(bookingRequest," " );
+            }
+            else if(eachField.split("=")[0].contains("bookingdates.checkin")){
+                partialUpdateBookingRequest.bookingdates=partialUpdateBookingRequest.bookingdates==null?new BookingDate():partialUpdateBookingRequest.bookingdates;
+                partialUpdateBookingRequest.bookingdates.checkin=getDate(eachField.split("=")[1]);
+                bookingRequest.bookingdates.checkin=partialUpdateBookingRequest.bookingdates.checkin;
+            }
+            else if(eachField.split("=")[0].contains("bookingdates.checkout")){
+                partialUpdateBookingRequest.bookingdates=partialUpdateBookingRequest.bookingdates==null?new BookingDate():partialUpdateBookingRequest.bookingdates;
+                partialUpdateBookingRequest.bookingdates.checkout=getDate(eachField.split("=")[1]);
+                bookingRequest.bookingdates.checkout=partialUpdateBookingRequest.bookingdates.checkout;
+            }
+            else
+            {
+                field1.set(partialUpdateBookingRequest,eachField.split("=")[1]);
+                field2.set(bookingRequest,eachField.split("=")[1]);
+            }
+        }
         actualStatusCode=getService.getBookingService().partialUpdateBooking(headers,
                 partialUpdateBookingRequest,
                 bookingId);
     }
-    @And("verify the partial update booking response is as expected")
-    public void verifyThePartialUpdateBookingResponseIsAsExpected() {
-        Assert.assertTrue(partialUpdateBookingRequest.firstname.equals( getService.getBookingService().partialUpdateBookingResponse().firstname));
-        Assert.assertTrue(partialUpdateBookingRequest.lastname.equals( getService.getBookingService().partialUpdateBookingResponse().lastname));
+    @And("verify the partial update booking response is as expected for {string}")
+    public void verifyThePartialUpdateBookingResponseIsAsExpected(String fieldValue) {
+        Assert.assertTrue(bookingRequest.equals(getService.getBookingService().partialUpdateBookingResponse()));
+
     }
     @And("verify the Get booking response is as expected")
     public void verifyTheGetBookingResponseIsAsExpected() {

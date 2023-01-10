@@ -1,5 +1,10 @@
 package com.payconiq.cucumber.util.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.payconiq.cucumber.util.Logger.LoggerFile;
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
@@ -19,7 +24,18 @@ public class APIUtils
                                            HashMap<String, String> headers,
                                            String jsonPayload)
                 {
-
+                        LoggerFile.log("################# Request Details ########################");
+                        LoggerFile.log("URL :" + url);
+                        LoggerFile.log("Method Type :" + methodType);
+                        LoggerFile.log("Query params : " + queryParams);
+                        LoggerFile.log("Headers : " + headers);
+                        if(jsonPayload!=null) {
+                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                            JsonElement je = JsonParser.parseString(jsonPayload);
+                            String prettyJsonString = gson.toJson(je);
+                            LoggerFile.log("Payload : \n" + prettyJsonString);
+                        }
+                        LoggerFile.log("##########################################################");
                       request= RestAssured.given();
                       request.baseUri(APIConstants.apiBaseUrl);
                       switch(methodType)
@@ -48,7 +64,14 @@ public class APIUtils
                               default:
                                       throw new RuntimeException("Method :" + methodType + " is not found");
                       }
+                        LoggerFile.log("########### Response Details #############################");
+                        LoggerFile.log("Status code :" + String.valueOf(response.getStatusCode()));
+                        LoggerFile.log("Status line :" + response.getStatusLine());
+                        LoggerFile.log("Response Headers : "+ response.getHeaders());
+                        LoggerFile.log("Json Response body :"+response.getBody().prettyPrint().toString());
+                        LoggerFile.log("##########################################################");
                         return response.getStatusCode();
+
 
                 }
 

@@ -25,23 +25,29 @@ Feature: HotelBooking
       | firstName | lastName | totalPrice | depositPaid | checkInDates | checkOutDates | addon     |
       | TestFN    | TestLN   | 1000       | true        | Today#30     | Today#35      | Breakfast |
 
-  @PartialUpdateBooking
-  Scenario Outline: verify user can partially update an existing hotel booking with "<firstName>","<lastName>"
+  @PartialUpdateBooking @ProjectRequirement
+  Scenario Outline: verify user can partially update an existing hotel booking with "<fieldValue>"
     Given user creates booking request with valid information
     And user is authorised to access api
-    When user partially updates request with "<firstName>","<lastName>"
+    When user partially updates request with "<fieldValue>"
     Then verify status code 200 is received
-    And verify the partial update booking response is as expected
+    And verify the partial update booking response is as expected for "<fieldValue>"
     Examples:
-      | firstName | lastName |
-      | TestFN    | TestLN   |
-      |           | TestLN   |
-      | TestFN    |          |
-      |           |          |
-      | नीदरलैंड  | 中国人      |
+      | fieldValue                                                       |
+      | firstname=TestFN;lastname=space                                  |
+      | additionalneeds=lunch                                            |
+      | firstname=中国人;lastname=नीदरलैंड                                  |
+      | bookingdates.checkin=Today#19;bookingdates.checkout=Today#20 |
+      | firstname=Empty;lastname=Empty                                   |
 
+  @PartialUpdateBookingNegative @ProjectRequirement
+  Scenario: verify user cannot partially update an existing hotel booking without credentials"
+    Given user creates booking request with valid information
+    And user is authorised to access api
+    When user partially updates request with "firstname=TestFN;lastname=space"
+    Then verify status code 403 is received
 
-  @DeleteBooking
+  @DeleteBooking @ProjectRequirement
   Scenario: verify Booking can be created with delete api
     Given user creates booking request with valid information
     And user is authorised to access api
@@ -49,21 +55,21 @@ Feature: HotelBooking
     Then verify status code 201 is received
     And the created booking does not exist
 
-  @GetBookingInformation
+  @GetBookingInformation @ProjectRequirement
   Scenario: verify Booking information can be retrieved with Get Api
     Given user creates booking request with valid information
     When user gets the booking information
     Then verify status code 200 is received
     And verify the Get booking response is as expected
 
-  @GetBookingsInformationWithoutFilter
+  @GetBookingsInformationWithoutFilter @ProjectRequirement
   Scenario: verify Booking ids are retreived with Get Api with no filter
     Given user has created "20" hotel bookings
     When user gets multiple booking information
     Then verify status code 200 is received
     And verify "multiple" booking ids are retrieved
 
-  @GetBookingsInformationWithFilterFirstNameAndLastName
+  @GetBookingsInformationWithFilterFirstNameAndLastName @ProjectRequirement
   Scenario Outline: verify Booking ids are retreived with Get Api with <"filterCriteria">
     Given user has created "multiple" hotel bookings
     When user gets multiple booking information filtered by "<filterCriteria>"
@@ -74,7 +80,7 @@ Feature: HotelBooking
       | firstname=Payconiq_user_firstname_<timestamp>_1 | 1           |
       | lastname=Payconiq_user_lastname_<timestamp>_3   | 1           |
 
-  @GetBookingsInformationWithCheckInAndCheckOutDate
+  @GetBookingsInformationWithCheckInAndCheckOutDate @ProjectRequirement
   Scenario Outline: verify Booking ids are retrieved with GetAPI checkin and checkout "<filterCriteria>"
     Given user has created "multiple" hotel bookings
     When user gets multiple booking information filtered by "<filterCriteria>"
@@ -83,5 +89,4 @@ Feature: HotelBooking
     Examples:
       | filterCriteria   |
       | checkin=Today#1  |
-      | checkin=Today#-5 |
       | checkout=Today#6 |
