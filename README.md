@@ -4,7 +4,7 @@ API Test Automation
 Tech Stack :
 ===============================
 1. Programming Language - Java
-2. Test Framework - Junit with BDD Cucumber flavored with RestAssured
+2. Test Framework - Junit with BDD Cucumber (Gherkin) flavored with RestAssured
 3. Build management - Maven
 4. Reporting - Extent Report and File Logging
 5. Repo Management and VC - Github
