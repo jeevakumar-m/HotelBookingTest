@@ -53,7 +53,7 @@ public class HotelBookingTestApplicationTests extends AbstractBaseTestStep {
         LoggerFile.log("Pinged Health Check Url , Status = " + actualStatusCode);
     }
 
-    @Then("verify status code {int} is received")
+    @Then("status code {int} is received")
     public void verify_status_code_is_received(Integer expectedStatusCode) {
         Assert.assertEquals(actualStatusCode == expectedStatusCode, true);
         LoggerFile.log("Assertion of actual status code and expected status code" +
@@ -87,7 +87,7 @@ public class HotelBookingTestApplicationTests extends AbstractBaseTestStep {
         actualStatusCode = apiService.getBookingService().deleteBooking(headers, myBookingId);
     }
 
-    @Then("the created booking does not exist")
+    @Then("created booking does not exist")
     public void the_created_booking_does_not_exist() {
         Assert.assertTrue(404 == apiService.getBookingService().getBooking(headers, bookingId));
     }
@@ -98,13 +98,8 @@ public class HotelBookingTestApplicationTests extends AbstractBaseTestStep {
 
     }
 
-    @Then("verify retrieved booking information is as expected")
-    public void verify_retrieved_booking_information_is_as_expected() {
-        // Write code here that turns the phrase above into concrete actions
 
-    }
-
-    @Given("user has created {string} hotel bookings")
+    @Given("user creates {string} hotel bookings")
     public void user_has_created_multiple_hotel_bookings(String count) {
         if (count.equals("multiple")) {
             for (int i = 1; i <= 5; i++)
@@ -143,7 +138,7 @@ public class HotelBookingTestApplicationTests extends AbstractBaseTestStep {
         actualStatusCode = apiService.getBookingService().getBookings(headers, queryParams);
     }
 
-    @Then("verify {string} booking ids are retrieved")
+    @Then("{string} booking ids are retrieved")
     public void verify_multiple_booking_ids_are_retrieved(String records) {
         List<BookingsResponse> getBookingResponse = apiService.getBookingService().getBookingsResponse();
         if (records.equals(Constants.records_multiple)) {
@@ -178,12 +173,12 @@ public class HotelBookingTestApplicationTests extends AbstractBaseTestStep {
                 bookingId);
     }
 
-    @Then("verify the create booking response is as expected")
+    @Then("create booking response is as expected")
     public void verifyCreateBookingResponseIsAsExpected() {
         Assert.assertTrue(bookingRequest.equals(apiService.getBookingService().createBookingResponse().getBooking()));
     }
 
-    @Then("verify the update booking response is as expected")
+    @Then("update booking response is as expected")
     public void verifyUpdateBookingResponseIsAsExpected() {
         Assert.assertTrue(bookingRequest.equals(apiService.getBookingService().updateBookingResponse()));
     }
@@ -228,19 +223,19 @@ public class HotelBookingTestApplicationTests extends AbstractBaseTestStep {
                 (headers,partialUpdateBookingRequest,bookingId);
     }
 
-    @And("verify the partial update booking response is as expected for {string}")
+    @And("partial update booking response is as expected for {string}")
     public void verifyThePartialUpdateBookingResponseIsAsExpected(String fieldValue) {
         Assert.assertTrue(bookingRequest.equals(apiService.getBookingService().partialUpdateBookingResponse()));
 
     }
 
-    @And("verify the Get booking response is as expected")
+    @And("Get booking response is as expected")
     public void verifyTheGetBookingResponseIsAsExpected() {
         Booking getBookingResponse = apiService.getBookingService().getBookingResponse();
         Assert.assertTrue(bookingRequest.equals(getBookingResponse));
     }
 
-    @And("verify records that are greater than or equal to {string} are retrieved")
+    @And("records that are greater than or equal to {string} are retrieved")
     public void verifyRecordsThatAreGreaterThanOrEqualToAreRetrieved(String filterCriteria) {
         List<BookingsResponse> getBookingResponse = apiService.getBookingService().getBookingsResponse();
         System.out.println(getBookingResponse.size() + " records found");
