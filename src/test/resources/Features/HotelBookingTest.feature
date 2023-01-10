@@ -33,17 +33,16 @@ Feature: HotelBooking
     Then verify status code 200 is received
     And verify the partial update booking response is as expected for "<fieldValue>"
     Examples:
-      | fieldValue                                                       |
-      | firstname=TestFN;lastname=space                                  |
-      | additionalneeds=lunch                                            |
-      | firstname=中国人;lastname=नीदरलैंड                                  |
+      | fieldValue                                                   |
+      | firstname=TestFN;lastname=space                              |
+      | additionalneeds=lunch                                        |
+      | firstname=中国人;lastname=नीदरलैंड                              |
       | bookingdates.checkin=Today#19;bookingdates.checkout=Today#20 |
-      | firstname=Empty;lastname=Empty                                   |
+      | firstname=Empty;lastname=Empty                               |
 
   @PartialUpdateBookingNegative @ProjectRequirement
   Scenario: verify user cannot partially update an existing hotel booking without credentials"
     Given user creates booking request with valid information
-    And user is authorised to access api
     When user partially updates request with "firstname=TestFN;lastname=space"
     Then verify status code 403 is received
 
@@ -54,6 +53,12 @@ Feature: HotelBooking
     When user deletes the created booking id
     Then verify status code 201 is received
     And the created booking does not exist
+
+  @DeleteBooking @ProjectRequirement
+  Scenario: verify Booking can be created with delete api
+    Given user creates booking request with valid information
+    When user deletes the created booking id
+    Then verify status code 403 is received
 
   @GetBookingInformation @ProjectRequirement
   Scenario: verify Booking information can be retrieved with Get Api
@@ -70,7 +75,7 @@ Feature: HotelBooking
     And verify "multiple" booking ids are retrieved
 
   @GetBookingsInformationWithFilterFirstNameAndLastName @ProjectRequirement
-  Scenario Outline: verify Booking ids are retreived with Get Api with <"filterCriteria">
+  Scenario Outline: verify Booking ids are retreived with Get Api with "<filterCriteria>"
     Given user has created "multiple" hotel bookings
     When user gets multiple booking information filtered by "<filterCriteria>"
     Then verify status code 200 is received
@@ -87,6 +92,6 @@ Feature: HotelBooking
     Then verify status code 200 is received
     And verify records that are greater than or equal to "<filterCriteria>" are retrieved
     Examples:
-      | filterCriteria   |
-      | checkin=Today#1  |
-      | checkout=Today#6 |
+      | filterCriteria     |
+      | checkin=Today#1    |
+      | checkout=Today#-10 |
