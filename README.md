@@ -69,8 +69,8 @@ Pass - User retrieves multiple booking information with GetBookings service for 
 Fail - User retrieves multiple booking information with GetBookings service for checkin and checkout "checkout=Today#2"
 
 Observations :
-1.Checkout scenario retrieves irrelvant data eventhought it has been mentioned that only ids having checkout date greater or equal to filter criteria should be displayed.
-2.Eventhough patch api works for partial payload upload it violates the patch rule of payload operation like given below
+\n1.Checkout scenario retrieves irrelvant data eventhought it has been mentioned that only ids having checkout date greater or equal to filter criteria should be displayed.
+\n2.Eventhough patch api works for partial payload upload it violates the patch rule of payload operation like given below
 {
 
   "op": "type of operation",
@@ -80,9 +80,9 @@ Observations :
   "value": "field value"
 
 }
-
-
-
+3. For Delete API , status code returned is 201 (Created) , as per the standards one of the following adds meaning to operation (200,202,204) instead of 201.
+4. Get Bookings api returns nothing when multiple parameters are passed as query parameter. Though there are valid data with combination it returns null.
+5. when invalid query param is passed for getbookings api it returns all valid result which is incorrect.
 
 
 
