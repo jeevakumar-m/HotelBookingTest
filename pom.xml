@@ -76,14 +76,12 @@
                       <version>2.22.1</version>
                       <configuration>
                         <testFailureIgnore>true</testFailureIgnore>
-                        <skipTests>true</skipTests>
+                        <skipTests>false</skipTests>
                           <properties>
                               <configurationParameters>
                                   junit.jupiter.execution.parallel.enabled=false
                                   junit.jupiter.execution.parallel.mode.default=concurrent
-
                               </configurationParameters>
-
                           </properties>
                       </configuration>
                   </plugin>
