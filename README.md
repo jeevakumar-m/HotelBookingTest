@@ -75,8 +75,8 @@ drives the complete test execution which can be controlled using different tags 
 
 Total Test created for the @ProjectRequirement mentioned is 14 Tests as mentioned below ,
 
-**Execution Details 
-**
+Execution Details 
+======================
 
 Execution can be started by pulling down the repo and configuring the required tags in the testrunner section , executing maven goals would trigger test execution.<br />
 
