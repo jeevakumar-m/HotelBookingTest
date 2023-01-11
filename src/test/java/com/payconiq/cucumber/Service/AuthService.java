@@ -29,7 +29,7 @@ public class AuthService extends ServiceUtil {
             );
 
             AuthTokenResponse authTokenResponse = new Gson().fromJson(response.getBody().prettyPrint(), AuthTokenResponse.class);
-            token = authTokenResponse.token;
+            token = authTokenResponse.getToken();
         }
         return Constants.token + token;
     }
