@@ -4,11 +4,11 @@ API Test Automation
 Tech Stack :
 ===============================
 
-1. Programming Language - Java
-2. Test Framework - Junit with BDD Cucumber (Gherkin) flavored with RestAssured
-3. Build management - Maven
-4. Reporting - Extent Report and File Logging
-5. Repo Management and VC - Github
+1. Programming Language - Java<br />
+2. Test Framework - Junit with BDD Cucumber (Gherkin) flavored with RestAssured<br />
+3. Build management - Maven<br />
+4. Reporting - Extent Report and File Logging<br />
+5. Repo Management and VC - Github<br />
 
 Test Objective :
 =================
@@ -21,20 +21,24 @@ that can be used for regression)
 Scope and Out of Scope :
 =========================
 
-1. APIs to be tested inclusive as part of http://restful-booker.herokuapp.com/apidoc/index.html#api-Booking
-2. Any third party validation, db validation currently not exposed are out of scope, Support services like auth and ping.
+1. APIs to be tested inclusive as part of http://restful-booker.herokuapp.com/apidoc/index.html#api-Booking<br />
+2. Any third party validation, db validation currently not exposed are out of scope, Support services like auth and ping.<br />
 
 Test Approach
 ==============
 
-1.Feature to be validated - Booking
-2.Support services - Auth , Ping
-3.Service to be validated as part of Booking Feature - PartialUpdateBooking , DeleteBooking , GetBookingIds (With and WithoutFilter)
+1.Feature to be validated - Booking<br />
+2.Support services - Auth , Ping<br />
+3.Service to be validated as part of Booking Feature - PartialUpdateBooking , DeleteBooking , GetBookingIds (With and WithoutFilter)<br />
 
-BDD Cucumber approach Test scenarios have been written for the entire Booking feature focussing primarily on point 3.
-Following are the Project requirement tests that can be found in the feature file section with tag as "@ProjectRequirement"
+BDD Cucumber approach Test scenarios have been written for the entire Booking feature focussing primarily on point 3.<br />
+Following are the Project requirement tests that can be found in the feature file section with tag as "@ProjectRequirement"<br />
 
-Automation Test Framework has been created to serve the test automtion for regression / functional in a better way with POJO Implementation with Restassured.
+Automation Test Framework has been created to serve the test automtion for regression / functional in a better way with POJO Implementation with Restassured.<br />
+
+Deserialiazation and serialization of classes is done using Google Gson library and restassured library as and when required<br />
+
+Dynamic payload creation for PATCH Api is done using Reflections of class.<br />
 
 Framework Folder structure :
 ================================
@@ -42,34 +46,39 @@ Framework Folder structure :
 1.hotelBookingTestStepDefinitions :
 ====================================
 
-  a.Test-contains the stepdefinition logic for hotelbooking feature for different services.
-  b.hotelBookingTestStepDefinitions inherits from AbstractTestSteps that holds the simplified view of the basic step that are required by all stepdefinition files.
+  a.Test-contains the stepdefinition logic for hotelbooking feature for different services.<br />
+  b.hotelBookingTestStepDefinitions inherits from AbstractTestSteps that holds the simplified view of the basic step that are required by all stepdefinition files.<br />
 
 2.model :
 ====================================
 
-  a.request - contains all the required POJO for requests
-  b.response - contains all the required POJO for response
+  a.request - contains all the required POJO for requests<br />
+  b.response - contains all the required POJO for response<br />
 
 3.TestRunner
 ====================================
 
-drives the complete test execution which can be controlled using different tags that are used for test execution. this is a junit based testrunner
+drives the complete test execution which can be controlled using different tags that are used for test execution. this is a junit based testrunner<br />
 
 4.Service Layer
 ====================================
 
-  This contains the Classes for different services offered by the swagger
-    a.Auth service - class responsible for generating token 
-    b.Booking service - responsible for all booking related operations
-    c.Ping service - responsible for all health check functionality
-5. API Util holds the constants ,wrapper for all the basic feature functionalities and then Util to create a resuable restassured component that can be used across different tests
-6. LoggerFile to log the results
-7. parser file to read the config file
-8. Properties categorized as application and extent used for app related credentilals and urls and the later for reporting.
+  This contains the Classes for different services offered by the swagger<br />
+    a.Auth service - class responsible for generating token <br />
+    b.Booking service - responsible for all booking related operations<br />
+    c.Ping service - responsible for all health check functionality<br />
+5. API Util holds the constants ,wrapper for all the basic feature functionalities and then Util to create a resuable restassured component that can be used across different tests<br />
+6. LoggerFile to log the results<br />
+7. parser file to read the config file<br />
+8. Properties categorized as application and extent used for app related credentilals and urls and the later for reporting.<br />
 
 
 Total Test created for the @ProjectRequirement mentioned is 14 Tests as mentioned below ,
+
+**Execution Details 
+**
+
+Execution can be started by pulling down the repo and configuring the required tags in the testrunner section , executing maven goals would trigger test execution.<br />
 
 Results :
 ====================================
