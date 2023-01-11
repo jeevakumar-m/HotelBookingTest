@@ -30,20 +30,21 @@ Feature: HotelBooking
     Given user creates booking request with valid information
     And user is authorised to access api
     When user partially updates request with "<fieldValue>"
-    Then status code 200 is received
+    Then status code <expectedCode> is received
     And partial update booking response is as expected for "<fieldValue>"
     Examples:
-      | fieldValue                                                   |
-      | firstname=TestFN;lastname=space                              |
-      | additionalneeds=lunch                                        |
-      | firstname=中国人;lastname=नीदरलैंड                              |
-      | bookingdates.checkin=Today#19;bookingdates.checkout=Today#20 |
-      | firstname=Empty;lastname=Empty                               |
+      | fieldValue                                                   | expectedCode |
+      | firstname=TestFN;lastname=space                              | 200          |
+      | additionalneeds=lunch                                        | 200          |
+      | firstname=中国人;lastname=नीदरलैंड                              | 200          |
+      | bookingdates.checkin=Today#19;bookingdates.checkout=Today#20 | 200          |
+      | firstname=Empty;lastname=Empty                               | 200          |
+      | bookingdates.checkin=Today#20;bookingdates.checkout=Today#19 | 400          |
 
   @PartialUpdateBookingNegative @ProjectRequirement
   Scenario: User cannot partially update an existing hotel booking without credentials
     Given user creates booking request with valid information
-    When user partially updates request with "firstname=TestFN;lastname=space"
+    When user partially updates request with "firstname=TestFN;lastname=se"
     Then status code 403 is received
 
   @DeleteBooking @ProjectRequirement

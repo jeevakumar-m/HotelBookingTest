@@ -120,6 +120,7 @@ Observations
 3. For Delete API , status code returned is 201 (Created) , as per the standards one of the following adds meaning to operation (200,202,204) instead of 201.<br />
 4. Get Bookings api returns nothing when multiple parameters are passed as query parameter. Though there are valid data with combination it returns null.<br />
 5. when invalid query param is passed for getbookings api it returns all valid result which is incorrect.<br />
+6. partially updates checkin and checkout dates when checkin date is greater than checkout date.<br/>
 
 
 
