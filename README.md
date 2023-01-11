@@ -3,6 +3,7 @@ API Test Automation
 
 Tech Stack :
 ===============================
+
 1. Programming Language - Java
 2. Test Framework - Junit with BDD Cucumber (Gherkin) flavored with RestAssured
 3. Build management - Maven
@@ -11,6 +12,7 @@ Tech Stack :
 
 Test Objective :
 =================
+
 You have a working “createBooking” and “getBookingById” endpoints, make sure that
 “partialUpdateBooking , “deleteBooking” and “getBookingIds”(test get all bookingIds
 without filter, and add test for 1-2 parameters) are working. (Write automated tests
@@ -18,11 +20,13 @@ that can be used for regression)
 
 Scope and Out of Scope :
 =========================
+
 1. APIs to be tested inclusive as part of http://restful-booker.herokuapp.com/apidoc/index.html#api-Booking
 2. Any third party validation, db validation currently not exposed are out of scope, Support services like auth and ping.
 
 Test Approach
 ==============
+
 1.Feature to be validated - Booking
 2.Support services - Auth , Ping
 3.Service to be validated as part of Booking Feature - PartialUpdateBooking , DeleteBooking , GetBookingIds (With and WithoutFilter)
@@ -34,19 +38,27 @@ Automation Test Framework has been created to serve the test automtion for regre
 
 Framework Folder structure :
 ================================
+
 1.hotelBookingTestStepDefinitions :
 ====================================
+
   a.Test-contains the stepdefinition logic for hotelbooking feature for different services.
   b.hotelBookingTestStepDefinitions inherits from AbstractTestSteps that holds the simplified view of the basic step that are required by all stepdefinition files.
+
 2.model :
 ====================================
+
   a.request - contains all the required POJO for requests
   b.response - contains all the required POJO for response
+
 3.TestRunner
 ====================================
+
 drives the complete test execution which can be controlled using different tags that are used for test execution. this is a junit based testrunner
+
 4.Service Layer
 ====================================
+
   This contains the Classes for different services offered by the swagger
     a.Auth service - class responsible for generating token 
     b.Booking service - responsible for all booking related operations
