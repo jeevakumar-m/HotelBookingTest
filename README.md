@@ -40,6 +40,12 @@ Deserialiazation and serialization of classes is done using Google Gson library 
 
 Dynamic payload creation for PATCH Api is done using Reflections of class.<br />
 
+Before Test Execution begins hooks is configured to clear the headers and set the headers with basic headers<br/>
+
+After Test execution is completed hooks is configured to delete created booking ids to control the junk data overhead<br/>
+
+Test data management is effectively done in such a way that at any point of time the test suite is independent of test data and can run effectively with auto data creation and deletion<br/>
+
 Framework Folder structure :
 ================================
 
